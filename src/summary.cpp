@@ -29,9 +29,9 @@ void write_summary()
   hid_t file = file_open(filename, 'w');
 
   write_header(file);
-  write_nuclides(file);
-  write_geometry(file);
-  write_materials(file);
+  // write_nuclides(file);
+  // write_geometry(file);
+  // write_materials(file);
 
   // Terminate access to the file.
   file_close(file);

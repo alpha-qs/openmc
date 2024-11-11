@@ -182,6 +182,9 @@ void FlatSourceDomain::update_neutron_source(double k_eff)
       }
       source_[sr * negroups_ + e_out] +=
         fission_source * inverse_k_eff / sigma_t;
+      if (source_[sr * negroups_ + e_out] < 0.0) {
+        source_[sr * negroups_ + e_out] = 0.0;
+      }
     }
   }
 
