@@ -328,11 +328,26 @@ void RandomRay::attenuate_flux_flat_source(double distance, bool is_active)
     float sigma_t = data::mg.macro_xs_[material].get_xs(
       MgxsType::TOTAL, g, NULL, NULL, NULL, t, a);
     float tau = sigma_t * distance;
-    float exponential = cjosey_exponential(tau); // exponential = 1 - exp(-tau)
-    float new_delta_psi =
-      (angular_flux_[g] - domain_->source_[source_element + g]) * exponential;
-    delta_psi_[g] = new_delta_psi;
-    angular_flux_[g] -= new_delta_psi;
+    // Diamond difference
+    float angular_flux_out = 
+      (2.0 * domain_->source_[source_element + g] * tau + 
+       angular_flux_[g] * (2.f - tau)) / (2.f + tau);
+    if (angular_flux_out < 0.0) {
+      float exponential = cjosey_exponential(tau); // exponential = 1 - exp(-tau)
+      float new_delta_psi =
+        (angular_flux_[g] - domain_->source_[source_element + g]) * exponential;
+      delta_psi_[g] = new_delta_psi;
+      angular_flux_[g] -= new_delta_psi;
+    } else {
+      delta_psi_[g] = angular_flux_[g] - angular_flux_out;
+      angular_flux_[g] = angular_flux_out;
+    }
+    // // Step MOC
+    // float exponential = cjosey_exponential(tau); // exponential = 1 - exp(-tau)
+    // float new_delta_psi =
+    //   (angular_flux_[g] - domain_->source_[source_element + g]) * exponential;
+    // delta_psi_[g] = new_delta_psi;
+    // angular_flux_[g] -= new_delta_psi;
   }
 
   // If ray is in the active phase (not in dead zone), make contributions to
