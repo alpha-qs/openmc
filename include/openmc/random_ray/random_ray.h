@@ -57,6 +57,9 @@ private:
   double distance_travelled_ {0};
   bool is_active_ {false};
   bool is_alive_ {true};
+
+  // Only active groups saved in this vector are calculated during sweeping.
+  vector<int> active_groups_; 
 }; // class RandomRay
 
 } // namespace openmc

@@ -324,7 +324,7 @@ void RandomRay::attenuate_flux_flat_source(double distance, bool is_active)
   const int a = 0;
 
   // MOC incoming flux attenuation + source contribution/attenuation equation
-  for (int g = 0; g < negroups_; g++) {
+  for (int g : active_groups_) {
     float sigma_t = data::mg.macro_xs_[material].get_xs(
       MgxsType::TOTAL, g, NULL, NULL, NULL, t, a);
     float tau = sigma_t * distance;
@@ -344,7 +344,7 @@ void RandomRay::attenuate_flux_flat_source(double distance, bool is_active)
 
     // Accumulate delta psi into new estimate of source region flux for
     // this iteration
-    for (int g = 0; g < negroups_; g++) {
+    for (int g : active_groups_) {
       domain_->scalar_flux_new_[source_element + g] += delta_psi_[g];
     }
 
@@ -559,6 +559,22 @@ void RandomRay::initialize_ray(uint64_t ray_id, FlatSourceDomain* domain)
   for (int g = 0; g < negroups_; g++) {
     angular_flux_[g] = domain_->source_[source_region_idx * negroups_ + g];
   }
+
+  // Here, we sample the active groups for this ray. Only active
+  // groups are calculated during transport sweep.
+  // Currently, we set the active groups manually.
+  active_groups_.clear();
+  for (int g = 0; g < negroups_; g++) {
+    // if ( g >= 0 && g < 20) {
+    //   if (prn(current_seed()) < 0.5f) {
+    //     active_groups_.push_back(g);
+    //   }
+    // } else {
+    //   active_groups_.push_back(g);
+    // }
+    active_groups_.push_back(g);
+  }
+
 }
 
 } // namespace openmc
