@@ -239,10 +239,6 @@ RandomRaySimulation::RandomRaySimulation()
   // ensure we don't attempt to write source sites to statepoint
   settings::source_write = false;
 
-  // Random ray mode does not have an inner loop over generations within a
-  // batch, so set the current gen to 1
-  simulation::current_gen = 1;
-
   switch (RandomRay::source_shape_) {
   case RandomRaySourceShape::FLAT:
     domain_ = make_unique<FlatSourceDomain>();
