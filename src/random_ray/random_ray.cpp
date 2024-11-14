@@ -561,4 +561,21 @@ void RandomRay::initialize_ray(uint64_t ray_id, FlatSourceDomain* domain)
   }
 }
 
+//==============================================================================
+// RandomRayLegacy implementation
+//==============================================================================
+RandomRayLegacy::RandomRayLegacy()
+  : angular_flux_(data::mg.num_energy_groups_)
+{
+  // Do nothing
+}
+
+RandomRayLegacy::RandomRayLegacy(RandomRay ray)
+{
+  r() = ray.r();
+  u() = ray.u();
+  std::copy(
+    ray.angular_flux_.begin(), ray.angular_flux_.end(), angular_flux_.begin());
+}
+
 } // namespace openmc
