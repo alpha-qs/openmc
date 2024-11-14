@@ -89,6 +89,8 @@ private:
   Direction u_;
 }; // class RandomRayLegacy
 
+extern vector<RandomRayLegacy> random_ray_legacy_;
+
 } // namespace openmc
 
 #endif // OPENMC_RANDOM_RAY_H

@@ -17,6 +17,8 @@
 
 namespace openmc {
 
+vector<RandomRayLegacy> random_ray_legacy_;
+
 //==============================================================================
 // Non-member functions
 //==============================================================================
@@ -259,6 +261,9 @@ void RandomRaySimulation::simulate()
     domain_->convert_external_sources();
     domain_->count_external_source_regions();
   }
+
+  // Allocate the vector for rays' inheritance
+  random_ray_legacy_.resize(simulation::work_per_rank);
 
   // Random ray power iteration loop
   while (simulation::current_batch < settings::n_batches) {
