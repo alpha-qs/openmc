@@ -269,6 +269,11 @@ void RandomRaySimulation::simulate()
 
     // Initialize the current batch
     initialize_batch();
+
+    // gen_per_batch trun on
+    simulation::current_gen = 1;
+    while (simulation::current_gen <= settings::gen_per_batch) {
+
     initialize_generation();
 
     // Reset total starting particle weight used for normalizing tallies
@@ -336,6 +341,10 @@ void RandomRaySimulation::simulate()
 
     // Finalize the current batch
     finalize_generation();
+
+    simulation::current_gen++;
+    } // For generation loop
+
     finalize_batch();
   } // End random ray power iteration loop
 }
