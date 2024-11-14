@@ -250,9 +250,6 @@ void RandomRay::event_advance_ray()
       double distance_dead = distance_inactive_ - distance_travelled_;
       attenuate_flux(distance_dead, false);
 
-      // Ray is set to active from here, record its legacy
-      
-
       double distance_alive = distance - distance_dead;
 
       // Ensure we haven't travelled past the active phase as well
