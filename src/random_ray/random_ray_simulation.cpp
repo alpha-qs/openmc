@@ -17,6 +17,8 @@
 
 namespace openmc {
 
+Halton_sampler halton_sampler;
+
 //==============================================================================
 // Non-member functions
 //==============================================================================
@@ -263,6 +265,9 @@ void RandomRaySimulation::simulate()
     domain_->convert_external_sources();
     domain_->count_external_source_regions();
   }
+
+  // Initialize haltom sampler
+  halton_sampler.init_faure();
 
   // Random ray power iteration loop
   while (simulation::current_batch < settings::n_batches) {

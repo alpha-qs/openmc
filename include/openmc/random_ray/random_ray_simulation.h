@@ -3,8 +3,12 @@
 
 #include "openmc/random_ray/flat_source_domain.h"
 #include "openmc/random_ray/linear_source_domain.h"
+#include "openmc/random_ray/halton_sample.h"
 
 namespace openmc {
+
+// For source sampling using Halton sequence
+extern Halton_sampler halton_sampler;
 
 /*
  * The RandomRaySimulation class encompasses data and methods for running a

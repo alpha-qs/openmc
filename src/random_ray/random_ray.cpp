@@ -1,5 +1,5 @@
 #include "openmc/random_ray/random_ray.h"
-
+#include "openmc/random_ray/random_ray_simulation.h"
 #include "openmc/constants.h"
 #include "openmc/geometry.h"
 #include "openmc/message_passing.h"
@@ -10,6 +10,7 @@
 #include "openmc/settings.h"
 #include "openmc/simulation.h"
 #include "openmc/source.h"
+#include "openmc/math_functions.h"
 
 namespace openmc {
 
@@ -536,6 +537,37 @@ void RandomRay::initialize_ray(uint64_t ray_id, FlatSourceDomain* domain)
   site.E = lower_bound_index(
     data::mg.rev_energy_bins_.begin(), data::mg.rev_energy_bins_.end(), site.E);
   site.E = negroups_ - site.E - 1.;
+  
+  // Sample a quasi-random number from the Halton sequence
+  if (auto* src = dynamic_cast<IndependentSource*>(ray_source_.get())) {
+    if (dynamic_cast<SpatialBox*>(src->space()) &&
+        dynamic_cast<UnitSphereDistribution*>(src->angle())) {
+      // For a source uniformly distributed in all directions and 
+      // uniformly distributed within a spatial box, the quasi-random
+      // numbers are sampled from the halton sequence.
+      
+      // Calculate index for this ray
+      unsigned index = particle_seed + 1;
+
+      // Sample space direction
+      Position frac;
+      auto* box = dynamic_cast<SpatialBox*>(src->space());
+      frac.x = halton_sampler.sample(0, index);
+      frac.y = halton_sampler.sample(1, index);
+      frac.z = halton_sampler.sample(2, index);
+      site.r = 
+         box->lower_left() + frac * (box->upper_right() - box->lower_left());
+
+      double mu = 
+        2.0 * static_cast<double>(halton_sampler.sample(3, index)) - 1.0;
+      double phi = 
+        2.0 * PI * static_cast<double>(halton_sampler.sample(4, index));
+
+      Direction u_ref {0.0, 0.0, 1.0};
+      site.u = rotate_angle(u_ref, mu, &phi, current_seed());
+    }
+  }
+
   this->from_source(&site);
 
   // Locate ray
