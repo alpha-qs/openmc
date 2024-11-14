@@ -59,6 +59,36 @@ private:
   bool is_alive_ {true};
 }; // class RandomRay
 
+class RandomRayLegacy
+{
+public:
+  //----------------------------------------------------------------------------
+  // Constructors
+  RandomRayLegacy();
+  RandomRayLegacy(RandomRay ray);
+
+  //----------------------------------------------------------------------------
+  // Methods
+
+  // Accessors for position
+  Position& r() { return r_; }
+  const Position& r() const { return r_; }
+
+  // Accessors for direction
+  Direction& u() { return u_; }
+  const Direction& u() const { return u_; }
+
+  //----------------------------------------------------------------------------
+  // Public data members
+  vector<float> angular_flux_;  
+
+private:
+  //----------------------------------------------------------------------------
+  // Private data members
+  Position r_;
+  Direction u_;
+}; // class RandomRayLegacy
+
 } // namespace openmc
 
 #endif // OPENMC_RANDOM_RAY_H
