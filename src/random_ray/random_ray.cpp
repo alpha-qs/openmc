@@ -580,6 +580,9 @@ void RandomRay::initialize_ray(
   int64_t source_region_idx =
     domain_->source_region_offsets_[i_cell] + cell_instance();
 
+  // Set starting source region
+  source_region_idx_ = source_region_idx;
+
   if (legacy == nullptr) {
     for (int g = 0; g < negroups_; g++) {
       angular_flux_[g] = domain_->source_[source_region_idx * negroups_ + g];
@@ -590,6 +593,16 @@ void RandomRay::initialize_ray(
     std::copy(
       legacy->angular_flux_.begin(), legacy->angular_flux_.end(), 
         angular_flux_.begin());
+      
+    // // Rescale starting angular flux
+    // for (int g = 0; g < negroups_; g++) {
+    //   if (legacy->birth_source_[g] > 0.0) {
+    //     float scale = 
+    //       domain_->source_[legacy->source_region_idx_ * negroups_ + g] / 
+    //       legacy->birth_source_[g];
+    //     angular_flux_[g] *= scale;
+    //   }
+    // }
 
     // Set to active ray
     is_active_ = true;
@@ -618,6 +631,7 @@ RandomRayLegacy::RandomRayLegacy(const RandomRay& ray) : RandomRayLegacy()
     ray.angular_flux_.begin(), ray.angular_flux_.end(), angular_flux_.begin());
   std::copy(
     ray.birth_source_.begin(), ray.birth_source_.end(), birth_source_.begin());
+  source_region_idx_ = ray.source_region_idx_;
 }
 
 } // namespace openmc
