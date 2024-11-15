@@ -294,9 +294,22 @@ void RandomRaySimulation::simulate()
 #pragma omp parallel for schedule(dynamic)                                     \
   reduction(+ : total_geometric_intersections_)
     for (int i = 0; i < simulation::work_per_rank; i++) {
-      RandomRay ray(i, domain_.get());
-      total_geometric_intersections_ +=
-        ray.transport_history_based_single_ray();
+
+      if (simulation::current_gen == 1) {
+        // Sample a brand new ray for the 1st generation in a batch
+        RandomRay ray(i, domain_.get());
+
+        // Transport
+        total_geometric_intersections_ +=
+          ray.transport_history_based_single_ray();
+      } else {
+        // Inherit information from the ray in last generation
+        RandomRay ray(i, domain_.get(), random_ray_legacy_[i]);
+
+        // Transport
+        total_geometric_intersections_ +=
+          ray.transport_history_based_single_ray();
+      }
     }
 
     simulation::time_transport.stop();

@@ -198,7 +198,15 @@ RandomRay::RandomRay()
 
 RandomRay::RandomRay(uint64_t ray_id, FlatSourceDomain* domain) : RandomRay()
 {
-  initialize_ray(ray_id, domain);
+  initialize_ray(ray_id, domain, nullptr);
+}
+
+RandomRay::RandomRay(
+  uint64_t ray_id, FlatSourceDomain* domain, RandomRayLegacy legacy) : 
+  RandomRay()
+{
+  // 
+  initialize_ray(ray_id, domain, &legacy);
 }
 
 // Transports ray until termination criteria are met
@@ -516,7 +524,8 @@ void RandomRay::attenuate_flux_linear_source(double distance, bool is_active)
   }
 }
 
-void RandomRay::initialize_ray(uint64_t ray_id, FlatSourceDomain* domain)
+void RandomRay::initialize_ray(
+  uint64_t ray_id, FlatSourceDomain* domain, RandomRayLegacy* legacy)
 {
   domain_ = domain;
 
@@ -537,11 +546,21 @@ void RandomRay::initialize_ray(uint64_t ray_id, FlatSourceDomain* domain)
   stream() = STREAM_TRACKING;
 
   // Sample from ray source distribution
-  SourceSite site {ray_source_->sample(current_seed())};
-  site.E = lower_bound_index(
-    data::mg.rev_energy_bins_.begin(), data::mg.rev_energy_bins_.end(), site.E);
-  site.E = negroups_ - site.E - 1.;
-  this->from_source(&site);
+  if (legacy == nullptr) {
+    SourceSite site {ray_source_->sample(current_seed())};
+    site.E = lower_bound_index(
+      data::mg.rev_energy_bins_.begin(), data::mg.rev_energy_bins_.end(), site.E);
+    site.E = negroups_ - site.E - 1.;
+    this->from_source(&site);
+  } else {
+    // Source site is copied from legacy
+    SourceSite site;
+    site.r = legacy->r();
+    site.u = legacy->u();
+    site.E = legacy->E();
+    site.wgt = 1.0;
+    this->from_source(&site);
+  } 
 
   // Locate ray
   if (lowest_coord().cell == C_NONE) {
@@ -561,10 +580,23 @@ void RandomRay::initialize_ray(uint64_t ray_id, FlatSourceDomain* domain)
   int64_t source_region_idx =
     domain_->source_region_offsets_[i_cell] + cell_instance();
 
-  for (int g = 0; g < negroups_; g++) {
-    angular_flux_[g] = domain_->source_[source_region_idx * negroups_ + g];
-    birth_source_[g] = angular_flux_[g];
-  }
+  if (legacy == nullptr) {
+    for (int g = 0; g < negroups_; g++) {
+      angular_flux_[g] = domain_->source_[source_region_idx * negroups_ + g];
+      birth_source_[g] = angular_flux_[g];
+    }
+  } else {
+    // Copy starting angular flux
+    std::copy(
+      legacy->angular_flux_.begin(), legacy->angular_flux_.end(), 
+        angular_flux_.begin());
+
+    // Set to active ray
+    is_active_ = true;
+
+    // Set travelled distance to inactive length
+    distance_travelled_ = distance_inactive_;
+  }  
 }
 
 //==============================================================================
@@ -577,10 +609,11 @@ RandomRayLegacy::RandomRayLegacy()
   // Do nothing
 }
 
-RandomRayLegacy::RandomRayLegacy(RandomRay ray)
+RandomRayLegacy::RandomRayLegacy(const RandomRay& ray) : RandomRayLegacy()
 {
   r() = ray.r();
   u() = ray.u();
+  E() = ray.E();
   std::copy(
     ray.angular_flux_.begin(), ray.angular_flux_.end(), angular_flux_.begin());
   std::copy(

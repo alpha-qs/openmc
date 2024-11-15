@@ -14,6 +14,8 @@ namespace openmc {
  * through the model. It is a small extension of the Particle class.
  */
 
+class RandomRayLegacy;
+
 // TODO: Inherit from GeometryState instead of Particle
 class RandomRay : public Particle {
 public:
@@ -21,6 +23,7 @@ public:
   // Constructors
   RandomRay();
   RandomRay(uint64_t ray_id, FlatSourceDomain* domain);
+  RandomRay(uint64_t ray_id, FlatSourceDomain* domain, RandomRayLegacy legacy);
 
   //----------------------------------------------------------------------------
   // Methods
@@ -29,7 +32,8 @@ public:
   void attenuate_flux_flat_source(double distance, bool is_active);
   void attenuate_flux_linear_source(double distance, bool is_active);
 
-  void initialize_ray(uint64_t ray_id, FlatSourceDomain* domain);
+  void initialize_ray(
+    uint64_t ray_id, FlatSourceDomain* domain, RandomRayLegacy* legacy);
   uint64_t transport_history_based_single_ray();
 
   //----------------------------------------------------------------------------
@@ -66,7 +70,7 @@ public:
   //----------------------------------------------------------------------------
   // Constructors
   RandomRayLegacy();
-  RandomRayLegacy(RandomRay ray);
+  RandomRayLegacy(const RandomRay& ray);
 
   //----------------------------------------------------------------------------
   // Methods
@@ -79,6 +83,10 @@ public:
   Direction& u() { return u_; }
   const Direction& u() const { return u_; }
 
+  // Accessors for Energy
+  double& E() { return E_; }
+  const double& E() const { return E_; }
+
   //----------------------------------------------------------------------------
   // Public data members
   vector<float> angular_flux_;  
@@ -87,6 +95,7 @@ public:
 private:
   //----------------------------------------------------------------------------
   // Private data members
+  double E_;
   Position r_;
   Direction u_;
 }; // class RandomRayLegacy
