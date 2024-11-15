@@ -607,8 +607,8 @@ void RandomRay::initialize_ray(
     // Set to active ray
     is_active_ = true;
 
-    // Set travelled distance to inactive length
-    distance_travelled_ = distance_inactive_;
+    // Set travelled distance to 0
+    distance_travelled_ = 0.0;
   }  
 }
 
