@@ -361,6 +361,10 @@ void RandomRaySimulation::simulate()
 
     finalize_batch();
   } // End random ray power iteration loop
+
+  // Deallocate memory for random rays' legacy
+  random_ray_legacy_.clear();
+  random_ray_legacy_.shrink_to_fit();
 }
 
 void RandomRaySimulation::reduce_simulation_statistics()
