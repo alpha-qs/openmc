@@ -205,7 +205,7 @@ void FlatSourceDomain::normalize_scalar_flux_and_volumes(
 {
   double normalization_factor = 1.0 / total_active_distance_per_iteration;
   double volume_normalization_factor =
-    1.0 / (total_active_distance_per_iteration * simulation::current_batch);
+    1.0 / (total_active_distance_per_iteration * overall_generation());
 
 // Normalize scalar flux to total distance travelled by all rays this iteration
 #pragma omp parallel for
