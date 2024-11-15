@@ -250,6 +250,10 @@ void RandomRay::event_advance_ray()
       double distance_dead = distance_inactive_ - distance_travelled_;
       attenuate_flux(distance_dead, false);
 
+      // Record the legacy from current ray
+      auto ray_id = id() - simulation::work_index[mpi::rank];
+      random_ray_legacy_.at(ray_id) = RandomRayLegacy(*this);
+
       double distance_alive = distance - distance_dead;
 
       // Ensure we haven't travelled past the active phase as well
@@ -570,7 +574,7 @@ RandomRayLegacy::RandomRayLegacy()
   // Do nothing
 }
 
-void RandomRayLegacy::from_ray(RandomRay ray)
+RandomRayLegacy::RandomRayLegacy(RandomRay ray)
 {
   r() = ray.r();
   u() = ray.u();

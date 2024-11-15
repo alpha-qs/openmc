@@ -65,7 +65,7 @@ public:
   //----------------------------------------------------------------------------
   // Constructors
   RandomRayLegacy();
-  void from_ray(RandomRay ray);
+  RandomRayLegacy(RandomRay ray);
 
   //----------------------------------------------------------------------------
   // Methods
