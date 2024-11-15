@@ -42,6 +42,7 @@ public:
   //----------------------------------------------------------------------------
   // Public data members
   vector<float> angular_flux_;
+  vector<float> birth_source_; // Record the source strength at birth
 
   bool ray_trace_only_ {false}; // If true, only perform geometry operations
 
@@ -81,6 +82,7 @@ public:
   //----------------------------------------------------------------------------
   // Public data members
   vector<float> angular_flux_;  
+  vector<float> birth_source_;
 
 private:
   //----------------------------------------------------------------------------

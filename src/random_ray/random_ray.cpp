@@ -187,7 +187,8 @@ RandomRaySourceShape RandomRay::source_shape_ {RandomRaySourceShape::FLAT};
 RandomRay::RandomRay()
   : angular_flux_(data::mg.num_energy_groups_),
     delta_psi_(data::mg.num_energy_groups_),
-    negroups_(data::mg.num_energy_groups_)
+    negroups_(data::mg.num_energy_groups_),
+    birth_source_(data::mg.num_energy_groups_)
 {
   if (source_shape_ == RandomRaySourceShape::LINEAR ||
       source_shape_ == RandomRaySourceShape::LINEAR_XY) {
@@ -562,6 +563,7 @@ void RandomRay::initialize_ray(uint64_t ray_id, FlatSourceDomain* domain)
 
   for (int g = 0; g < negroups_; g++) {
     angular_flux_[g] = domain_->source_[source_region_idx * negroups_ + g];
+    birth_source_[g] = angular_flux_[g];
   }
 }
 
@@ -569,7 +571,8 @@ void RandomRay::initialize_ray(uint64_t ray_id, FlatSourceDomain* domain)
 // RandomRayLegacy implementation
 //==============================================================================
 RandomRayLegacy::RandomRayLegacy()
-  : angular_flux_(data::mg.num_energy_groups_)
+  : angular_flux_(data::mg.num_energy_groups_),
+    birth_source_(data::mg.num_energy_groups_)
 {
   // Do nothing
 }
@@ -580,6 +583,8 @@ RandomRayLegacy::RandomRayLegacy(RandomRay ray)
   u() = ray.u();
   std::copy(
     ray.angular_flux_.begin(), ray.angular_flux_.end(), angular_flux_.begin());
+  std::copy(
+    ray.birth_source_.begin(), ray.birth_source_.end(), birth_source_.begin());
 }
 
 } // namespace openmc
