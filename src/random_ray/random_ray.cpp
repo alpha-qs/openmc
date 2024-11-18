@@ -545,7 +545,7 @@ void RandomRay::initialize_ray(uint64_t ray_id, FlatSourceDomain* domain)
     if (dynamic_cast<SpatialBox*>(src->space()) &&
         dynamic_cast<UnitSphereDistribution*>(src->angle())) {
       // Calculate index for this ray
-      unsigned index = particle_seed + 1;
+      unsigned index = particle_seed + openmc_get_seed();
 
       // Sample a space point
       Position frac;
