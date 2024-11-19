@@ -301,8 +301,9 @@ void get_run_parameters(pugi::xml_node node_base)
       FlatSourceDomain::volume_normalized_flux_tallies_ =
         get_node_value_bool(random_ray_node, "volume_normalized_flux_tallies");
     }
-    if (check_for_node(random_ray_node, "quasi")) {
-      RandomRay::quasi_ = std::stoi(get_node_value(random_ray_node, "quasi"));
+    if (check_for_node(random_ray_node, "quasi_base")) {
+      RandomRay::quasi_ = 
+        std::stoi(get_node_value(random_ray_node, "quasi_base"));
     } else {
       RandomRay::quasi_ = 0;
     }
