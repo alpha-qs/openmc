@@ -38,6 +38,8 @@ public:
   static double distance_active_;            // Active ray length
   static unique_ptr<Source> ray_source_;     // Starting source for ray sampling
   static RandomRaySourceShape source_shape_; // Flag for linear source
+  // Quasi-random number starting dimesnion
+  static int quasi_;  
 
   //----------------------------------------------------------------------------
   // Public data members

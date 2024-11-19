@@ -301,6 +301,14 @@ void get_run_parameters(pugi::xml_node node_base)
       FlatSourceDomain::volume_normalized_flux_tallies_ =
         get_node_value_bool(random_ray_node, "volume_normalized_flux_tallies");
     }
+    if (check_for_node(random_ray_node, "quasi")) {
+      RandomRay::quasi_ = std::stoi(get_node_value(random_ray_node, "quasi"));
+    } else {
+      RandomRay::quasi_ = 0;
+    }
+    if (RandomRay::quasi_ < 0 || RandomRay::quasi_ > 255) {
+      fatal_error("Quasi dimension must be between 0 and 255");
+    }
   }
 }
 
