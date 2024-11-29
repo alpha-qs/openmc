@@ -551,17 +551,19 @@ void RandomRay::initialize_ray(uint64_t ray_id, FlatSourceDomain* domain)
       // Sample a space point
       Position frac;
       auto* box = dynamic_cast<SpatialBox*>(src->space());
-      frac.x = halton_sampler.sample(quasi_, index);
-      frac.y = halton_sampler.sample(quasi_ + 1, index);
-      frac.z = halton_sampler.sample(quasi_ + 2, index);
+      frac.x = get_halton(halton_sampler.sample(quasi_, index));
+      frac.y = get_halton(halton_sampler.sample(quasi_ + 1, index));
+      frac.z = get_halton(halton_sampler.sample(quasi_ + 2, index));
       site.r = 
          box->lower_left() + frac * (box->upper_right() - box->lower_left());
 
       // Sample a direction
       double mu = 
-        2.0 * static_cast<double>(halton_sampler.sample(quasi_ + 3, index)) - 1.0;
+        2.0 * static_cast<double>(
+          get_halton(halton_sampler.sample(quasi_ + 3, index))) - 1.0;
       double phi = 
-        2.0 * PI * static_cast<double>(halton_sampler.sample(quasi_ + 4, index));
+        2.0 * PI * static_cast<double>(
+          get_halton(halton_sampler.sample(quasi_ + 4, index)));
 
       Direction u_ref {0.0, 0.0, 1.0};
       site.u = rotate_angle(u_ref, mu, &phi, current_seed());
@@ -574,7 +576,9 @@ void RandomRay::initialize_ray(uint64_t ray_id, FlatSourceDomain* domain)
   if (lowest_coord().cell == C_NONE) {
     if (!exhaustive_find_cell(*this)) {
       this->mark_as_lost(
-        "Could not find the cell containing particle " + std::to_string(id()));
+        "Could not find the cell containing particle " + std::to_string(id()) + 
+        " at location = " + std::to_string(this->r().x) + ", " +
+        std::to_string(this->r().y) + ", " + std::to_string(this->r().z) + ".");
     }
 
     // Set birth cell attribute

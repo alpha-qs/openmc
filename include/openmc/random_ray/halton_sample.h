@@ -25,6 +25,19 @@
 
 #include <algorithm>
 #include <vector>
+#include "openmc/constants.h"
+
+inline float get_halton(const float x)
+{  
+    float FP_COINCIDENT_F = static_cast<float>(openmc::FP_COINCIDENT);
+    if (std::abs(x) < FP_COINCIDENT_F) {
+        return 1e-10f;
+    } else if (std::abs(x - 1.0f) < FP_COINCIDENT_F) {
+        return 1.0f - 1e-10f;
+    } else {
+        return x;
+    }
+}
 
 // Compute points of the Halton sequence with with digit-permutations for different bases.
 class Halton_sampler
