@@ -597,6 +597,9 @@ void shannon_entropy()
           write_counting = 0;
         }
       }
+      if (write_counting != 0) {
+        entropy_file << "\n";
+      }
 
       // Close file for last call
       if (call_count == openmc::settings::n_batches) {
