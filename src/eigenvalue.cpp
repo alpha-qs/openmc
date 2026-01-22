@@ -26,6 +26,8 @@
 #include <iterator>  // for back_inserter
 #include <limits>    //for infinity
 #include <string>
+#include <iomanip>  
+#include <fstream>
 
 namespace openmc {
 
@@ -562,6 +564,45 @@ void shannon_entropy()
 
     // Add value to vector
     simulation::entropy.push_back(H);
+
+    // Write entropy to file
+    // Counting calls
+    static int call_count = 0;
+    call_count += 1;
+
+    // Generate a file for first call
+    std::ofstream entropy_file("entropy.dat", call_count == 1 ? std::ios::out
+                                                              : std::ios::app);
+
+    if (entropy_file.is_open()) {
+      if (call_count == 1) {
+        // Write header (Number of meshes and number of batches)
+        entropy_file << std::setw(15) << p.shape(0) << " " 
+                     << std::setw(15) << openmc::settings::n_batches << "\n";
+      }
+
+      // Write entropy of this batch
+      entropy_file << std::scientific << std::uppercase 
+      << std::setprecision(7) << std::setw(15) << H << "\n";
+
+      // Write entropy
+      auto n_meshes = p.shape(0);
+      int write_counting = 0;
+      for (int i = 0; i < n_meshes; i++) {
+        entropy_file << std::scientific << std::uppercase 
+        << std::setprecision(7) << std::setw(15) << p(i);
+        write_counting += 1;
+        if (write_counting == 10) {
+          entropy_file << "\n";
+          write_counting = 0;
+        }
+      }
+
+      // Close file for last call
+      if (call_count == openmc::settings::n_batches) {
+        entropy_file.close();
+      }
+    }
   }
 }
 
