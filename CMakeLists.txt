@@ -26,12 +26,12 @@ endif()
 #===============================================================================
 
 option(OPENMC_USE_OPENMP      "Enable shared-memory parallelism with OpenMP"         ON)
-option(OPENMC_BUILD_TESTS     "Build tests"                                          ON)
+option(OPENMC_BUILD_TESTS     "Build tests"                                          OFF)
 option(OPENMC_ENABLE_PROFILE  "Compile with profiling flags"                         OFF)
 option(OPENMC_ENABLE_COVERAGE "Compile with coverage analysis flags"                 OFF)
 option(OPENMC_USE_DAGMC       "Enable support for DAGMC (CAD) geometry"              OFF)
 option(OPENMC_USE_LIBMESH     "Enable support for libMesh unstructured mesh tallies" OFF)
-option(OPENMC_USE_MPI         "Enable MPI"                                           OFF)
+option(OPENMC_USE_MPI         "Enable MPI"                                           ON)
 option(OPENMC_USE_MCPL        "Enable MCPL"                                          OFF)
 option(OPENMC_USE_NCRYSTAL    "Enable support for NCrystal scattering"               OFF)
 option(OPENMC_USE_UWUW        "Enable UWUW"                                          OFF)
@@ -223,19 +223,19 @@ endif()
 #===============================================================================
 
 find_package(Git)
-if(GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
-  option(GIT_SUBMODULE "Check submodules during build" ON)
-  if(GIT_SUBMODULE)
-    message(STATUS "Submodule update")
-    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                    RESULT_VARIABLE GIT_SUBMOD_RESULT)
-    if(NOT GIT_SUBMOD_RESULT EQUAL 0)
-      message(FATAL_ERROR "git submodule update --init failed with \
-        ${GIT_SUBMOD_RESULT}, please checkout submodules")
-    endif()
-  endif()
-endif()
+# if(GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+#   option(GIT_SUBMODULE "Check submodules during build" ON)
+#   if(GIT_SUBMODULE)
+#     message(STATUS "Submodule update")
+#     execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+#                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+#                     RESULT_VARIABLE GIT_SUBMOD_RESULT)
+#     if(NOT GIT_SUBMOD_RESULT EQUAL 0)
+#       message(FATAL_ERROR "git submodule update --init failed with \
+#         ${GIT_SUBMOD_RESULT}, please checkout submodules")
+#     endif()
+#   endif()
+# endif()
 
 # Check to see if submodules exist (by checking one)
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/vendor/pugixml/CMakeLists.txt")
